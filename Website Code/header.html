@@ -1,11 +1,10 @@
-<nav class="navbar navbar-expand-sm navbar-light bg-light">
+<nav class="navbar navbar-expand navbar-light">
     <a class="navbar-brand" href="/index.html">
         <img id="navImage" src="so.png" width="50" height="50" alt="Logo" class="d-inline-block align-top">
     </a>
 
     <div id="otherOptions">
 
-    <!-- Everything inside this div will be collapsed on small viewports -->
     <div class="" id="navbarNav">
         <div class="navbar-nav">
             <li class="nav-item dropdown">
@@ -13,17 +12,17 @@
                     Menu
                 </a>
                 <div class="dropdown-menu" aria-labelledby="accountDropdown">
-                    <a class="dropdown-item" href="/index.html">Home</a>
-                    <a class="dropdown-item" href="/myAccount.html">My Account</a>
-                    <a class="dropdown-item" href="/myForms.html">My Forms</a>
-                    <a class="dropdown-item" href="/signout.html">Sign Out</a>
-                    <a class="dropdown-item" href="/login.html">Login</a>
-                    <a class="dropdown-item" href="/create-account.html">Create Account</a>
-                    <a class="dropdown-item" href="/page1.html">Sort Structure & Weights</a>
-                    <a class="dropdown-item" href="/page2.html">File Selection & Additional Parameters</a>
-                    <a class="dropdown-item" href="/output.html">View Output</a>
-                    <a class="dropdown-item" href="/clean.html">Clean Input (New!! 🥳)</a>
-                    <a class="dropdown-item" href="/formCreator.html">Form Creator (Experimental 🧪)</a>
+                    <a class="dropdown-item" id="adrop" href="/index.html">Home</a>
+                    <a class="dropdown-item" id="adrop" href="/myAccount.html">My Account</a>
+                    <a class="dropdown-item" id="adrop" href="/myForms.html">My Forms</a>
+                    <a class="dropdown-item" id="adrop" href="/signout.html">Sign Out</a>
+                    <a class="dropdown-item" id="adrop" href="/login.html">Login</a>
+                    <a class="dropdown-item" id="adrop" href="/create-account.html">Create Account</a>
+                    <a class="dropdown-item" id="adrop" href="/page1.html">Sort Structure & Weights</a>
+                    <a class="dropdown-item" id="adrop" href="/page2.html">File Selection & Additional Parameters</a>
+                    <a class="dropdown-item" id="adrop" href="/output.html">View Output</a>
+                    <a class="dropdown-item" id="adrop" href="/clean.html">Clean Input (New!! 🥳)</a>
+                    <a class="dropdown-item" id="adrop" href="/formCreator.html">Form Creator (Experimental 🧪)</a>
                 </div>
             </li>
         </div>
@@ -32,31 +31,48 @@
 </nav>
 
 <style>
+    .dropdown-toggle {
+        color: #676767 !important;
+    }
+
+    .dropdown-toggle:hover {
+        color: black !important;
+    }
+
     .navbar {
         background-color: white;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.075), 0 2px 4px -2px rgba(0, 0, 0, 0.045);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+        border-radius: 2rem;
+        margin: .8rem;
+        border: 1px solid rgb(223, 222, 222);
     }
 
     /* Improve the dropdown menu appearance */
     .dropdown-menu {
-        border: none; /* Remove the default border */
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.075); /* Add a subtle shadow */
+        border-radius: 2rem;
+        border: 1px solid rgb(223, 222, 222); /* Remove the default border */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Add a subtle shadow */
         padding: 0.5rem 0; /* Add some padding */
     }
 
     /* Style for the dropdown items */
     .dropdown-item {
-        color: #333; /* Text color */
-        background-color: #fff; /* Background color */
+        color: #676767; /* Text color */
+        background-color: white; /* Background color */
+        border-radius: 2rem;
         padding: 0.75rem 1.5rem; /* Spacing */
-    }
+    }F
 
     .dropdown-item:hover, .dropdown-item:focus {
         color: black; /* Text color on hover/focus */
     }
 
-    /* Optional: Adjust the dropdown toggle link */
-    .nav-link.dropdown-toggle {
-        color: white; /* Adjust the color as needed */
+    .dropdown-item:active {
+        color: black; /* Keeps text color the same */
+        background-color: white; /* Adjust the background color to match hover/focus or as needed */
+    }
+
+    #adrop {
+        background-color: white !important;
     }
 </style>
