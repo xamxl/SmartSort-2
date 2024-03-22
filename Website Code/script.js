@@ -27,7 +27,3 @@ function toggleVisibility(id) {
     element.style.display = "block";
     document.getElementById("newFeaturesLink").style.display = "none";
 }
-
-function openNewPage(link) {
-    window.open(link, '_blank');
-}
