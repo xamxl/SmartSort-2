@@ -1,4 +1,5 @@
 let running = false;
+let createAccountAdded = false;
 
 document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -55,7 +56,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
                 expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000));
                 document.cookie = "loginKey=" + result.text + "; expires=" + expires.toUTCString() + "; path=/;";
                 document.cookie = "email=" + data.email + "; expires=" + expires.toUTCString() + "; path=/;";
-                document.getElementById("modalBackdrop").style.display = "none";
+                document.getElementById("loginModalBackdrop").style.display = "none";
             }
         });
     })
@@ -66,4 +67,32 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         console.error('Request failed:', error.message);
     });
 
+});
+
+document.querySelector('a[id="createAccount"]').addEventListener('click', function(event) {
+    event.preventDefault();
+    document.getElementById("loginModalBackdrop").style.display = "none";
+
+    if (!createAccountAdded) {
+        fetch('createAccountPopup.html')
+            .then(response => response.text())
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                Array.from(doc.querySelectorAll('script')).forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.textContent = oldScript.textContent;
+                    document.body.appendChild(newScript);
+                    oldScript.parentNode.removeChild(oldScript);
+                });
+
+                document.body.appendChild(doc.body);
+        });
+
+        createAccountAdded = true;
+    } else {
+        document.getElementById("createAccountModalBackdrop").style.display = "flex";
+    }
 });
