@@ -11,14 +11,25 @@
 <body style="display: flex; flex-direction: column; min-height: 100%; margin: 0;">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <script src="functions.js"></script>
     <div id="header"></div>
     
-    <div class="container mt-5">
-        
+    <div class="container mt-5 smallPage">
+        <div id="fileUpload">
+            <input type="file" id="actual-btn" hidden accept=".xlsx"/>
+            <label for="actual-btn" class="mt-4 floater bigButtonHolder"><p class="bigButton">🔼 Upload Individual XLSX File</p></label>
+            <p class="looseText">You need to select a file to get started!</p>
+        </div>
+
+        <div class="space"></div>
+        <div class="myTableOuter floater" id="sheetContent" style="display: none;">
+            <table class="table table-bordered table-hover table-sm myTable" id="sheetTable"></table>
+        </div>
     </div>
 
     <script src="adder.js"></script>
+    <script src="startSort.js"></script>
     <div id="footer"></div>
 </body>
 </html>

@@ -35,20 +35,6 @@ iframe {
     margin-bottom: 0 !important;
 }
 
-.clicker {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
-    background-color: white;
-    border: 1px solid rgb(223, 222, 222);
-    color: #007bff;
-    padding: .8rem;
-    text-align: center;
-    text-decoration: none;
-    margin-left: 0;
-    margin-top: 0 !important;
-    margin-bottom: 0;
-    transition: box-shadow 0.3s ease-in-out;
-}
-
 .clicker:hover {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.6);
 }
@@ -87,4 +73,56 @@ iframe {
 
 .fullwidth {
     width: 100%;
+}
+
+.bigButtonHolder {
+    display: flex;
+    justify-content: center;
+    background-image: linear-gradient(to bottom right, #007bff, #61aeff);
+    padding: 1.5rem;
+    transition: box-shadow 0.3s ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+
+.bigButtonHolder:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.6);
+}
+
+.bigButton {
+    margin: 0;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    background: none;
+    border: none;
+}
+
+.smallPage {
+    margin-top: 1em !important;
+}
+
+.looseText {
+    text-align: center;
+}
+
+.myTableOuter {
+    overflow-y: auto;
+    padding: 0;
+}
+
+.myTable {
+    margin: 0;
+}
+
+.space {
+    margin: 3rem;
+}
+
+.top-row th, .top-row td {
+    padding-top: 1em;
+}
+
+.left-col {
+    padding-left: 1em !important;
 }

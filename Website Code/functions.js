@@ -37,3 +37,13 @@ async function isLoggedIn() {
         return false;
     }
 }
+
+function readXLSXFile(file, callback) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        callback(workbook);
+    };
+    reader.readAsArrayBuffer(file);
+}
