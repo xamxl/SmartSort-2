@@ -147,11 +147,6 @@ iframe {
     padding-bottom: 1em !important;
 }
 
-.rowButton {
-    padding: 2em 2em !important;
-    text-align: center;
-}
-
 .highlight {
     background-color: #acd4ff; /* Change this to your preferred highlight color */
     transition: background-color 0.4s ease-in-out;
@@ -160,4 +155,27 @@ iframe {
 td, th {
     transition: background-color 0.4s ease-in-out;
     cursor: pointer;
+}
+
+.tableSelectorCell {
+    padding: 1em 1em !important;
+    text-align: center;
+}
+
+.noClicker {
+    cursor: default;
+}
+
+.tableSelector {
+    border: none;
+    cursor: pointer;
+}
+
+.tableSelector:focus {
+    border: none;
+    outline: none;
+}
+
+.selected {
+    color: #007bff;
 }

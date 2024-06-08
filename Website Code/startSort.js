@@ -104,7 +104,30 @@ function handleColumnClick(colIndex) {
         } else {
             // Otherwise, create a dropdown menu
             var select = document.createElement("select");
-            var options = ["Option 1", "Option 2", "Option 3"];
+            select.classList.add('tableSelector');
+            // add an event listener so add class when changes
+            select.addEventListener('change', function() {
+                if (this.value != "Not used") {
+                    this.classList.add('selected');
+                } else {
+                    this.classList.remove('selected');
+                }
+            });
+            var options = [
+                "Not used",
+                "Ranked choices for desired locations",
+                "Ranked choices for not desired locations",
+                "Unranked choices for desired locations",
+                "Unranked choices for not desired locations",
+                "Ranked choices for individuals to be with",
+                "Ranked choices for individuals not to be with",
+                "Unranked choices for individuals to be with",
+                "Unranked choices for individuals not to be with",
+                "Attributes to balance",
+                "Attributes to split by",
+                "Attributes to not isolate",
+                "Attributes to isolate",
+                "Attributes to group by"];
 
             // Add options to the dropdown
             options.forEach(function(option) {
@@ -131,6 +154,10 @@ function handleColumnClick(colIndex) {
         const cells = row.querySelectorAll('td, th');
         cells.forEach(cell => {
             cell.classList.remove('highlight');
+            cell.classList.add('noClicker');
         });
     });
+
+    var instructions = document.getElementById("instructions");
+    instructions.innerHTML = "Select the type of data in each column. Columns that you do not select will be ignored.";
 }
