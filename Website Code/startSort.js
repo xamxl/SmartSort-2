@@ -160,4 +160,96 @@ function handleColumnClick(colIndex) {
 
     var instructions = document.getElementById("instructions");
     instructions.innerHTML = "Select the type of data in each column. Columns that you do not select will be ignored.";
+    instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); confirmSelect();">Continue ></a>';
+}
+
+function confirmSelect() {
+    const table = document.getElementById('sheetTable');
+    const rows = table.querySelectorAll('tr');
+    const numCols = table.rows[0].cells.length; // Assuming the second row defines the columns
+    const colsToRemove = [];
+
+    // Check which columns have "Not used" selected in the dropdown
+    for (let i = 0; i < numCols; i++) {
+        const select = rows[0].cells[i].querySelector('select');
+        // prevent selects from changing
+        if (select) {
+            select.disabled = true;
+            select.classList.add('noClicker');
+        }
+        const emojiCell = rows[0].cells[i].innerHTML.includes("🙋🏾‍♀️🙋🏻‍♂️");
+        if (select && select.value === "Not used" && !emojiCell) {
+            colsToRemove.push(i);
+        }
+    }
+
+    // Remove columns from bottom to top to avoid index shifting issues
+    colsToRemove.reverse().forEach(colIndex => {
+        rows.forEach(row => {
+            if (row.cells[colIndex]) {
+                row.deleteCell(colIndex);
+            }
+        });
+    });
+
+    var instructions = document.getElementById("instructions");
+    instructions.innerHTML = "Rank any ranked choices.";
+
+    // Get the tbody element
+    tbody = table.getElementsByTagName("tbody")[0];
+    // Insert a new row at the top of the tbody
+    newRow = tbody.insertRow(0);
+
+    // Get the number of columns in the table
+    numColsNew = table.rows[1].cells.length; // Assuming the second row defines the columns
+
+    for (var i = 0; i < numColsNew; i++) {
+        // Create a new cell
+        var newCell = newRow.insertCell(i);
+        newCell.classList.add('tableSelectorCell');
+
+        var rankedOptions = [
+            "Ranked choices for desired locations",
+            "Ranked choices for not desired locations",
+            "Ranked choices for individuals to be with",
+            "Ranked choices for individuals not to be with"];
+        // if selector.value is in rankedOptions
+        let selectElement = table.rows[1].cells[i].getElementsByTagName('select')[0];
+    if (selectElement != null && rankedOptions.includes(selectElement.value)) {
+        var input = document.createElement("input");
+        input.type = "number";
+        input.classList.add('tableSelector');
+
+        newCell.appendChild(input);
+        }
+
+        // Add class names for left-col, right-col, and top-row
+        if (i === 0) {
+            newCell.classList.add('left-col');
+        } else if (i === numColsNew - 1) {
+            newCell.classList.add('right-col');
+        }
+        newCell.classList.add('top-row');
+    }
+
+    // update right and left and top and bottom for all columns
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td, th');
+        cells.forEach(cell => {
+            if (cells.length > 0) {
+                cells[0].classList.add('left-col');
+                cells[cells.length - 1].classList.add('right-col');
+            }
+        });
+    });
+    // update bottom top too
+    const rowCells = rows[0].querySelectorAll('td');
+    rowCells.forEach(cell => {
+        cell.classList.add('top-row');
+    });
+    const lastRowCells = rows[rows.length - 1].querySelectorAll('td');
+    lastRowCells.forEach(cell => {
+        cell.classList.add('bottom-row');
+    });
+
 }

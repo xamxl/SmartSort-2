@@ -43,6 +43,20 @@ iframe {
     outline: none;
 }
 
+.clicker {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+    background-color: white;
+    border: 1px solid rgb(223, 222, 222);
+    color: #007bff;
+    padding: .8rem;
+    text-align: center;
+    text-decoration: none;
+    margin-left: 0;
+    margin-top: 0 !important;
+    margin-bottom: 0;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
 .field {
     width: 100%;
     text-align: left;
@@ -163,7 +177,7 @@ td, th {
 }
 
 .noClicker {
-    cursor: default;
+    cursor: default !important;
 }
 
 .tableSelector {
