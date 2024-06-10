@@ -193,7 +193,8 @@ function confirmSelect() {
     });
 
     var instructions = document.getElementById("instructions");
-    instructions.innerHTML = "Rank any ranked choices.";
+    instructions.innerHTML = "Rank all ranked choices.";
+    instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); confirmRank();">Continue ></a>';
 
     // Get the tbody element
     tbody = table.getElementsByTagName("tbody")[0];
@@ -207,6 +208,7 @@ function confirmSelect() {
         // Create a new cell
         var newCell = newRow.insertCell(i);
         newCell.classList.add('tableSelectorCell');
+        newCell.classList.add('noClicker');
 
         var rankedOptions = [
             "Ranked choices for desired locations",
@@ -218,7 +220,8 @@ function confirmSelect() {
     if (selectElement != null && rankedOptions.includes(selectElement.value)) {
         var input = document.createElement("input");
         input.type = "number";
-        input.classList.add('tableSelector');
+        input.placeholder = "Rank";
+        input.classList.add('field');
 
         newCell.appendChild(input);
         }
@@ -228,8 +231,11 @@ function confirmSelect() {
             newCell.classList.add('left-col');
         } else if (i === numColsNew - 1) {
             newCell.classList.add('right-col');
+        } else {
+            newCell.classList.add('mid-col');
         }
         newCell.classList.add('top-row');
+        newCell.classList.add('noBorderSide');
     }
 
     // update right and left and top and bottom for all columns
@@ -253,3 +259,4 @@ function confirmSelect() {
     });
 
 }
+

@@ -193,3 +193,16 @@ td, th {
 .selected {
     color: #007bff;
 }
+
+.mid-col:not(.right-col):not(.left-col) {
+    border-right: none;
+    border-left: none;
+}
+
+.right-col.noBorderSide {
+    border-left: none;
+}
+
+.left-col.noBorderSide {
+    border-right: none;
+}
