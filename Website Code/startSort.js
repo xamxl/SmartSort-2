@@ -260,3 +260,147 @@ function confirmSelect() {
 
 }
 
+function confirmRank() {
+    let table = document.querySelector('table');
+    let numColsNew = table.rows[1].cells.length;
+
+    var rankedOptions = [
+        "Ranked choices for desired locations",
+        "Ranked choices for not desired locations",
+        "Ranked choices for individuals to be with",
+        "Ranked choices for individuals not to be with"];
+
+    for (let i = 0; i < numColsNew; i++) {
+        let selectElement = table.rows[1].cells[i].getElementsByTagName('select')[0];
+        let inputElement = table.rows[0].cells[i].getElementsByTagName('input')[0];
+        if (selectElement != null && rankedOptions.includes(selectElement.value)) {
+            if (inputElement.value == "" || inputElement.value < 1 || !Number.isInteger(Number(inputElement.value))) {
+                var instructions = document.getElementById("instructions");
+                instructions.innerHTML = "Please rank all ranked choices with a natural number: 1, 2, 3, etc";
+                instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); confirmRank();">Continue ></a>';
+                instructions.classList.add('text-danger');
+                return;
+            }
+        }
+    }
+
+    // create a dictionary with all rankings for each type in rankedOptions
+    let rankings = {};
+    for (let i = 0; i < numColsNew; i++) {
+        let selectElement = table.rows[1].cells[i].getElementsByTagName('select')[0];
+        let inputElement = table.rows[0].cells[i].getElementsByTagName('input')[0];
+        if (selectElement != null && rankedOptions.includes(selectElement.value)) {
+            if (!rankings[selectElement.value]) {
+                rankings[selectElement.value] = [];
+            }
+            rankings[selectElement.value].push(inputElement.value);
+        }
+    }
+    
+    // check if each list for each term is consecutive
+    for (let key in rankings) {
+        let list = rankings[key];
+        let sortedList = list.slice().sort();
+        for (let i = 0; i < sortedList.length; i++) {
+            if (sortedList[i] != i + 1) {
+                var instructions = document.getElementById("instructions");
+                instructions.innerHTML = "Each category must have a first choice (1), second choice (2), etc.";
+                instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); confirmRank();">Continue ></a>';
+                instructions.classList.add('text-danger');
+                return;
+            }
+        }
+    }
+
+    for (let i = 0; i < numColsNew; i++) {
+        let selectElement = table.rows[1].cells[i].getElementsByTagName('select')[0];
+        let inputElement = table.rows[0].cells[i].getElementsByTagName('input')[0];
+        if (inputElement != null) {
+            inputElement.disabled = true;
+        }
+    }
+
+    var instructions = document.getElementById("instructions");
+    instructions.innerHTML = "Updated the weights as needed.";
+    instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); submitWeights();">Continue ></a>';
+    instructions.classList.remove('text-danger');
+
+    newRow = tbody.insertRow(0);
+
+    // Get the number of columns in the table
+    numColsNew = table.rows[1].cells.length; // Assuming the second row defines the columns
+
+    for (var i = 0; i < numColsNew; i++) {
+        // Create a new cell
+        var newCell = newRow.insertCell(i);
+        newCell.classList.add('tableSelectorCell');
+        newCell.classList.add('noClicker');
+
+        let selectElement = table.rows[2].cells[i].getElementsByTagName('select')[0];
+    if (selectElement != null) {
+        var input = document.createElement("input");
+        input.type = "number";
+        input.value = "1";
+        input.classList.add('field');
+
+        newCell.appendChild(input);
+        }
+
+        // Add class names for left-col, right-col, and top-row
+        if (i === 0) {
+            newCell.classList.add('left-col');
+        } else if (i === numColsNew - 1) {
+            newCell.classList.add('right-col');
+        } else {
+            newCell.classList.add('mid-col');
+        }
+        newCell.classList.add('top-row');
+        newCell.classList.add('noBorderSide');
+    }
+
+    // update right and left and top and bottom for all columns
+    const rows = document.querySelectorAll('#sheetTable tr');
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td, th');
+        cells.forEach(cell => {
+            if (cells.length > 0) {
+                cells[0].classList.add('left-col');
+                cells[cells.length - 1].classList.add('right-col');
+            }
+        });
+    });
+    // update bottom top too
+    const rowCells = rows[0].querySelectorAll('td');
+    rowCells.forEach(cell => {
+        cell.classList.add('top-row');
+    });
+    const lastRowCells = rows[rows.length - 1].querySelectorAll('td');
+    lastRowCells.forEach(cell => {
+        cell.classList.add('bottom-row');
+    });
+}
+
+function submitWeights() {
+    let table = document.querySelector('table');
+    let numColsNew = table.rows[1].cells.length;
+
+    for (let i = 0; i < numColsNew; i++) {
+        let inputElement = table.rows[0].cells[i].getElementsByTagName('input')[0];
+        if (inputElement != null && (inputElement.value == "" || inputElement.value < 0 || !Number.isInteger(Number(inputElement.value)))) {
+            var instructions = document.getElementById("instructions");
+            instructions.innerHTML = "Please weight all features with natural number: 1, 2, 3, etc";
+            instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); submitWeights();">Continue ></a>';
+            instructions.classList.add('text-danger');
+            return;
+        }
+    }
+    
+    document.getElementById("sheetContentInner").classList.add('hidden');
+    var instructions = document.getElementById("instructions");
+    instructions.innerHTML = "Create one or more groups to continue.";
+    instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); submitGroups();">Continue ></a>';
+    instructions.classList.remove('text-danger');
+
+    // create a new table with three columns. The first is name (string), then max size (int), then min preferred size (int)
+}
+
