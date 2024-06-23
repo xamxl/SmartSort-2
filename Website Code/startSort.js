@@ -431,6 +431,13 @@ function submitWeights() {
                 var input = document.createElement("input");
                 input.type = index == 0 ? "text" : "number"; // text for Name, number for Max Size and Min Preferred Size
                 input.classList.add("field");
+                if (index == 1) {
+                    input.placeholder = "Max";
+                } else if (index == 2) {
+                    input.placeholder = "Min";
+                } else {
+                    input.placeholder = "Name";
+                }
                 if (copyValues && copyValues[index] !== undefined) {
                     input.value = copyValues[index];
                 }
@@ -439,7 +446,11 @@ function submitWeights() {
                 var deleteIcon = document.createElement("span");
                 deleteIcon.innerHTML = "🗑️";
                 deleteIcon.style.cursor = "pointer";
-                deleteIcon.addEventListener("click", () => groupTable.deleteRow(newRow.rowIndex));
+                deleteIcon.addEventListener("click", () => {
+                    if (groupTable.rows.length > 2) {
+                        groupTable.deleteRow(newRow.rowIndex);
+                    }
+                });
                 newCell.appendChild(deleteIcon);
             }
         });
@@ -460,17 +471,17 @@ function submitWeights() {
     // Links to add and copy rows
     var addLink = document.createElement("a");
     addLink.href = "#";
-    addLink.innerText = "Add";
+    addLink.innerText = "Add Group";
     addLink.addEventListener("click", function(event) {
         event.preventDefault();
         addGroupRow();
     });
 
-    var addGroupText = document.createTextNode(" Group");
+    var addGroupText = document.createTextNode("");
 
     var copyLink = document.createElement("a");
     copyLink.href = "#";
-    copyLink.innerText = "Copy";
+    copyLink.innerText = "Copy last group ";
     copyLink.addEventListener("click", function(event) {
         event.preventDefault();
         let copyCount = document.getElementById("copyCount").value;
@@ -487,23 +498,39 @@ function submitWeights() {
         }
     });
 
-    var copyGroupText = document.createTextNode(" Last Group ");
     var copyCountInput = document.createElement("input");
     copyCountInput.type = "number";
     copyCountInput.id = "copyCount";
     copyCountInput.value = "1";
     copyCountInput.classList.add("field");
     copyCountInput.style.width = "50px";
-    var timesText = document.createTextNode(" times");
+
+    var timesLink = document.createElement("a");
+    timesLink.href = "#";
+    timesLink.innerText = " times";
+    timesLink.addEventListener("click", function(event) {
+        event.preventDefault();
+        let copyCount = document.getElementById("copyCount").value;
+        if (copyCount < 1) {
+            return;
+        }
+        let lastRow = groupTable.rows[groupTable.rows.length - 1];
+        let copyValues = [];
+        for (let i = 0; i < 3; i++) {
+            copyValues.push(lastRow.cells[i].querySelector("input").value);
+        }
+        for (let i = 0; i < copyCount; i++) {
+            addGroupRow(copyValues);
+        }
+    });
 
     // Append the links to the linksP
     linksP.appendChild(addLink);
     linksP.appendChild(addGroupText);
     linksP.appendChild(document.createTextNode(" | "));
     linksP.appendChild(copyLink);
-    linksP.appendChild(copyGroupText);
     linksP.appendChild(copyCountInput);
-    linksP.appendChild(timesText);
+    linksP.appendChild(timesLink);
 
     // Append the linksP to the document
     document.getElementById("sheetContent").appendChild(linksP);
@@ -512,6 +539,7 @@ function submitWeights() {
     addGroupRow();
     addGroupRow();
 }
+
 
 function updateTableClasses() {
     let groupTable = document.getElementById("groupTable");
@@ -528,4 +556,109 @@ function updateTableClasses() {
             if (j > 0 && j < cells.length - 1 && i != 0) cells[j].classList.add('mid-col');
         }
     }
+}
+
+function submitGroups() {
+    let table = document.getElementById("groupTable");
+    let rows = table.rows;
+    let instructions = document.getElementById("instructions");
+
+    // Validate groups input
+    for (let i = 1; i < rows.length; i++) {
+        let nameInput = rows[i].cells[0].querySelector("input");
+        let maxSizeInput = rows[i].cells[1].querySelector("input");
+        let minPreferredSizeInput = rows[i].cells[2].querySelector("input");
+        if (nameInput.value === "" || maxSizeInput.value === "" || minPreferredSizeInput.value === "" || maxSizeInput.value < 1 || minPreferredSizeInput.value < 0 || !Number.isInteger(Number(maxSizeInput.value)) || !Number.isInteger(Number(minPreferredSizeInput.value))) {
+            instructions.innerHTML = "Please ensure all groups have a non-empty name, max size greater than 0, and min preferred size 0 or larger. All sizes must be whole numbers.";
+            instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); submitGroups();">Continue ></a>';
+            instructions.classList.add('text-danger');
+            return;
+        }
+    }
+
+    if (rows.length < 3) {
+        instructions.innerHTML = "Please create at least two groups.";
+        instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); submitGroups();">Continue ></a>';
+        instructions.classList.add('text-danger');
+        return;
+    }
+
+    // Proceed to the next step
+    instructions.innerHTML = "Configure final parameters.";
+    instructions.classList.remove('text-danger');
+
+    // Hide previous table and remove add and copy links
+    document.querySelectorAll('.myTableOuter')[1].classList.add('hidden');
+    document.querySelectorAll('.looseText')[2].classList.add('hidden');
+
+    // Create a new div and table for final parameters
+    var finalParamsDiv = document.createElement("div");
+    finalParamsDiv.classList.add("myTableOuter", "floater");
+
+    var finalParamsTable = document.createElement("table");
+    finalParamsTable.id = "finalParamsTable";
+    finalParamsTable.classList.add("table", "table-bordered", "table-sm", "myTable");
+
+    var params = [
+        {label: "Location Minimum Size Weight", type: "number", placeholder: "Weight"},
+        {label: "Iterations", type: "number", placeholder: "#"},
+        {label: "Number of Sorts", type: "number", placeholder: "#"},
+        {label: "Sort Name", type: "text", placeholder: "Name"}
+    ];
+
+    // Create rows for each parameter
+    params.forEach((param, index) => {
+        var row = finalParamsTable.insertRow();
+        
+        // Column 1: Label
+        var labelCell = row.insertCell(0);
+        labelCell.innerText = param.label;
+        labelCell.classList.add('noClicker', 'tableSelectorCell', 'left-col');
+        if (index == 0) labelCell.classList.add('top-row');
+        if (index == params.length - 1) labelCell.classList.add('bottom-row');
+        
+        // Column 2: Input
+        var inputCell = row.insertCell(1);
+        inputCell.classList.add('tableSelectorCell', 'noClicker', 'right-col');
+        var input = document.createElement("input");
+        input.type = param.type;
+        input.placeholder = param.placeholder;
+        input.classList.add("field");
+        inputCell.appendChild(input);
+        if (index == 0) inputCell.classList.add('top-row');
+        if (index == params.length - 1) inputCell.classList.add('bottom-row');
+    });
+
+    // Append table to the div
+    finalParamsDiv.appendChild(finalParamsTable);
+
+    // Append the div to the document
+    document.getElementById("sheetContent").appendChild(finalParamsDiv);
+
+    // Update instructions
+    instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); finalizeSubmission();">Submit ></a>';
+}
+
+function finalizeSubmission() {
+    let finalParamsTable = document.getElementById("finalParamsTable");
+    let rows = finalParamsTable.rows;
+    let instructions = document.getElementById("instructions");
+
+    // Validate final parameters input
+    for (let i = 0; i < rows.length; i++) {
+        let inputElement = rows[i].cells[1].querySelector("input");
+        if (inputElement.value === "" || (inputElement.type === "number" && (inputElement.value < 0 || !Number.isInteger(Number(inputElement.value))))) {
+            instructions.innerHTML = "Please ensure all final parameters have valid values.";
+            instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); finalizeSubmission();">Submit ></a>';
+            instructions.classList.add('text-danger');
+            return;
+        }
+    }
+
+    // Proceed with final submission logic here
+    instructions.innerHTML = "Submission successful.";
+    instructions.classList.remove('text-danger');
+
+    // Hide final parameters table div
+    document.querySelectorAll('.myTableOuter')[2].classList.add('hidden');
 }
