@@ -383,24 +383,149 @@ function confirmRank() {
 function submitWeights() {
     let table = document.querySelector('table');
     let numColsNew = table.rows[1].cells.length;
+    let instructions = document.getElementById("instructions");
 
+    // Validate weights input
     for (let i = 0; i < numColsNew; i++) {
         let inputElement = table.rows[0].cells[i].getElementsByTagName('input')[0];
-        if (inputElement != null && (inputElement.value == "" || inputElement.value < 0 || !Number.isInteger(Number(inputElement.value)))) {
-            var instructions = document.getElementById("instructions");
+        if (inputElement != null && (inputElement.value === "" || inputElement.value < 0 || !Number.isInteger(Number(inputElement.value)))) {
             instructions.innerHTML = "Please weight all features with natural number: 1, 2, 3, etc";
             instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); submitWeights();">Continue ></a>';
             instructions.classList.add('text-danger');
             return;
         }
     }
-    
+
+    // Proceed to the next step
     document.getElementById("sheetContentInner").classList.add('hidden');
-    var instructions = document.getElementById("instructions");
     instructions.innerHTML = "Create one or more groups to continue.";
     instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); submitGroups();">Continue ></a>';
     instructions.classList.remove('text-danger');
 
-    // create a new table with three columns. The first is name (string), then max size (int), then min preferred size (int)
+    // Create a new div and table for group creation
+    var groupDiv = document.createElement("div");
+    groupDiv.classList.add("myTableOuter", "floater");
+
+    var groupTable = document.createElement("table");
+    groupTable.id = "groupTable";
+    groupTable.classList.add("table", "table-bordered", "table-sm", "myTable");
+
+    // Create header row
+    var headerRow = groupTable.insertRow(0);
+    var headers = ["Name", "Max Size", "Min Preferred Size", ""];
+    headers.forEach(headerText => {
+        var headerCell = document.createElement("td");
+        headerCell.innerText = headerText;
+        headerCell.classList.add('noClicker', 'tableSelectorCell');
+        headerRow.appendChild(headerCell);
+    });
+
+    // Function to add new rows
+    function addGroupRow(copyValues = null) {
+        var newRow = groupTable.insertRow();
+        
+        headers.forEach((headerText, index) => {
+            var newCell = newRow.insertCell(index);
+            newCell.classList.add('tableSelectorCell', 'noClicker', 'noBorderSide');
+            if (index < 3) {
+                var input = document.createElement("input");
+                input.type = index == 0 ? "text" : "number"; // text for Name, number for Max Size and Min Preferred Size
+                input.classList.add("field");
+                if (copyValues && copyValues[index] !== undefined) {
+                    input.value = copyValues[index];
+                }
+                newCell.appendChild(input);
+            } else {
+                var deleteIcon = document.createElement("span");
+                deleteIcon.innerHTML = "🗑️";
+                deleteIcon.style.cursor = "pointer";
+                deleteIcon.addEventListener("click", () => groupTable.deleteRow(newRow.rowIndex));
+                newCell.appendChild(deleteIcon);
+            }
+        });
+
+        updateTableClasses();
+    }
+
+    // Append table to the div
+    groupDiv.appendChild(groupTable);
+
+    // Append the div to the document
+    document.getElementById("sheetContent").appendChild(groupDiv);
+
+    // Create a new div for the links
+    var linksP = document.createElement("p");
+    linksP.classList.add("looseText", "top");
+
+    // Links to add and copy rows
+    var addLink = document.createElement("a");
+    addLink.href = "#";
+    addLink.innerText = "Add";
+    addLink.addEventListener("click", function(event) {
+        event.preventDefault();
+        addGroupRow();
+    });
+
+    var addGroupText = document.createTextNode(" Group");
+
+    var copyLink = document.createElement("a");
+    copyLink.href = "#";
+    copyLink.innerText = "Copy";
+    copyLink.addEventListener("click", function(event) {
+        event.preventDefault();
+        let copyCount = document.getElementById("copyCount").value;
+        if (copyCount < 1) {
+            return;
+        }
+        let lastRow = groupTable.rows[groupTable.rows.length - 1];
+        let copyValues = [];
+        for (let i = 0; i < 3; i++) {
+            copyValues.push(lastRow.cells[i].querySelector("input").value);
+        }
+        for (let i = 0; i < copyCount; i++) {
+            addGroupRow(copyValues);
+        }
+    });
+
+    var copyGroupText = document.createTextNode(" Last Group ");
+    var copyCountInput = document.createElement("input");
+    copyCountInput.type = "number";
+    copyCountInput.id = "copyCount";
+    copyCountInput.value = "1";
+    copyCountInput.classList.add("field");
+    copyCountInput.style.width = "50px";
+    var timesText = document.createTextNode(" times");
+
+    // Append the links to the linksP
+    linksP.appendChild(addLink);
+    linksP.appendChild(addGroupText);
+    linksP.appendChild(document.createTextNode(" | "));
+    linksP.appendChild(copyLink);
+    linksP.appendChild(copyGroupText);
+    linksP.appendChild(copyCountInput);
+    linksP.appendChild(timesText);
+
+    // Append the linksP to the document
+    document.getElementById("sheetContent").appendChild(linksP);
+
+    // Add initial rows
+    addGroupRow();
+    addGroupRow();
 }
 
+function updateTableClasses() {
+    let groupTable = document.getElementById("groupTable");
+    let rows = groupTable.rows;
+
+    for (let i = 0; i < rows.length; i++) {
+        let cells = rows[i].cells;
+        for (let j = 0; j < cells.length; j++) {
+            cells[j].classList.remove('left-col', 'right-col', 'top-row', 'bottom-row', "mid-col");
+            if (i == 0) cells[j].classList.add('top-row');
+            if (i == rows.length - 1) cells[j].classList.add('bottom-row');
+            if (j == 0) cells[j].classList.add('left-col');
+            if (j == cells.length - 1) cells[j].classList.add('right-col');
+            if (j > 0 && j < cells.length - 1 && i != 0) cells[j].classList.add('mid-col');
+        }
+    }
+}

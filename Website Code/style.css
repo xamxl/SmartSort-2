@@ -120,6 +120,10 @@ iframe {
     text-align: center;
 }
 
+.looseText.top {
+    margin-top: 1em;
+}
+
 .myTableOuter {
     overflow-y: auto;
     padding: 0;
@@ -209,4 +213,9 @@ td, th {
 
 .hidden {
     display: none;
+}
+
+.linksDiv {
+    text-align: center;
+    margin-top: 1em;
 }
