@@ -613,7 +613,7 @@ function submitGroups() {
         // Column 1: Label
         var labelCell = row.insertCell(0);
         labelCell.innerText = param.label;
-        labelCell.classList.add('noClicker', 'tableSelectorCell', 'left-col');
+        labelCell.classList.add('noClicker', 'tableSelectorCell', 'left-col', 'verticalCenter');
         if (index == 0) labelCell.classList.add('top-row');
         if (index == params.length - 1) labelCell.classList.add('bottom-row');
         
