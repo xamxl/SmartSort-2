@@ -655,10 +655,6 @@ function finalizeSubmission() {
         }
     }
 
-    // Proceed with final submission logic here
-    instructions.innerHTML = "Submission successful.";
-    instructions.classList.remove('text-danger');
-
-    // Hide final parameters table div
-    document.querySelectorAll('.myTableOuter')[2].classList.add('hidden');
+    // forward to new page
+    window.location.href = "runSort.html?forwarded=true";
 }

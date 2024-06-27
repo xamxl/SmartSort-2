@@ -99,6 +99,14 @@ iframe {
     cursor: pointer;
 }
 
+.bigButtonHolder.yellow {
+    background-image: linear-gradient(to bottom right, #ffc107, #f7d56f);
+}
+
+.bigButtonHolder.green {
+    background-image: linear-gradient(to bottom right, #28a745, #7bff8f);
+}
+
 .bigButtonHolder:hover {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.6);
 }
