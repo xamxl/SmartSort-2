@@ -20,6 +20,13 @@ h2 {
     padding: 2rem;
 }
 
+.button-container {
+    margin: .8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
 .color1 {
     background-color: #d1ecf1;
 }
@@ -225,4 +232,19 @@ td, th {
 
 .verticalCenter {
     vertical-align: middle !important;
+}
+
+.sideBySide {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.bigButtonHolder.fill {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.bigButtonHolder.fill.bottom {
+    margin-top: 1em;
 }

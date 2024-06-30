@@ -584,12 +584,15 @@ function submitGroups() {
     }
 
     // Proceed to the next step
-    instructions.innerHTML = "Configure final parameters.";
+    instructions.innerHTML = "Configure final parameters and select a sort type.";
     instructions.classList.remove('text-danger');
 
     // Hide previous table and remove add and copy links
     document.querySelectorAll('.myTableOuter')[1].classList.add('hidden');
     document.querySelectorAll('.looseText')[2].classList.add('hidden');
+
+    // outer div
+    var outerDiv = document.createElement("div");
 
     // Create a new div and table for final parameters
     var finalParamsDiv = document.createElement("div");
@@ -629,14 +632,54 @@ function submitGroups() {
         if (index == params.length - 1) inputCell.classList.add('bottom-row');
     });
 
-    // Append table to the div
     finalParamsDiv.appendChild(finalParamsTable);
 
-    // Append the div to the document
-    document.getElementById("sheetContent").appendChild(finalParamsDiv);
+    // Create a new div and table for final parameters
+    finalParamsDiv.classList.add("myTableOuter", "floater");
+    finalParamsDiv.style.width = '100%'; // Ensure it takes full width
 
-    // Update instructions
-    instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); finalizeSubmission();">Submit ></a>';
+    var finalParamsTable = document.createElement("table");
+    finalParamsTable.id = "finalParamsTable";
+    finalParamsTable.classList.add("table", "table-bordered", "table-sm", "myTable");
+    finalParamsTable.style.width = '100%'; // Table should fill its container
+
+    // Add width adjustments for label containers
+    const containerDiv = document.createElement('div');
+    containerDiv.className = 'button-container';
+    containerDiv.style.width = '100%'; // Match width with the table container
+
+    const fullSortLabel = document.createElement('label');
+    fullSortLabel.className = 'floater bigButtonHolder yellow fill';
+    fullSortLabel.style.width = '100%'; // Take up half of the container width
+
+    const fullSortParagraph = document.createElement('p');
+    fullSortParagraph.className = 'bigButton';
+    fullSortParagraph.textContent = '⚡ Full Sort';
+
+    fullSortLabel.appendChild(fullSortParagraph);
+
+    const randomSortLabel = document.createElement('label');
+    randomSortLabel.className = 'floater bigButtonHolder green fill bottom';
+    randomSortLabel.style.width = '100%'; // Take up the remaining half of the container width
+
+    const randomSortParagraph = document.createElement('p');
+    randomSortParagraph.className = 'bigButton';
+    randomSortParagraph.textContent = '❇️ Random Sort';
+
+    randomSortLabel.appendChild(randomSortParagraph);
+
+    // Append both labels to the container div
+    containerDiv.appendChild(fullSortLabel);
+    containerDiv.appendChild(randomSortLabel);
+
+    // add the div to the outer div
+    outerDiv.appendChild(finalParamsDiv);
+    outerDiv.appendChild(containerDiv);
+
+    outerDiv.classList.add('sideBySide');
+
+    // Append the div to the document
+    document.getElementById("sheetContent").appendChild(outerDiv);
 }
 
 function finalizeSubmission() {
@@ -654,7 +697,4 @@ function finalizeSubmission() {
             return;
         }
     }
-
-    // forward to new page
-    window.location.href = "runSort.html?forwarded=true";
 }
