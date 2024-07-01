@@ -25,6 +25,7 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    border: 1px solid rgba(223, 222, 222, 0);
 }
 
 .color1 {
@@ -125,6 +126,8 @@ iframe {
     font-weight: bold;
     background: none;
     border: none;
+    display: flex;
+    align-items: center;
 }
 
 .smallPage {
@@ -247,4 +250,54 @@ td, th {
 
 .bigButtonHolder.fill.bottom {
     margin-top: 1em;
+}
+
+.circular-popup {
+    height: 50vh;
+    width: 50vh; /* 50% of the viewport width */
+     /* Keeps the aspect ratio as a circle */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 50%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.progress-ring {
+    width: 100%;
+    height: 100%;
+}
+
+.progress-ring__circle {
+    fill: transparent;
+    r: 70;
+    cx: 80;
+    cy: 80;
+    transform: rotate(-90deg);
+    transform-origin: center;
+}
+
+.progress-ring__circle {
+    stroke-width: 10;
+    stroke-linecap: round; 
+}
+
+#message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;  
+    display: flex;  
+    align-items: center; 
+    justify-content: center; 
+    width: 100%;     
+    text-align: center; 
+    margin: 0;       
+    padding: 0;     
 }

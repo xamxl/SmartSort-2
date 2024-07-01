@@ -1,0 +1,27 @@
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>Smart Sort</title>
+    <link rel="icon" href="so.png">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+</head>
+
+<div class="backdrop">
+    <div class="circular-popup">
+        <svg class="progress-ring" width="100%" height="100%" viewBox="0 0 160 160">
+            <!-- Reduced stroke-width for a thinner appearance -->
+            <circle class="progress-ring__background" stroke="rgb(200, 200,200)" stroke-width=".7" fill="transparent" r="70" cx="80" cy="80"/>
+            <!-- Ensure the active ring remains visible and prominent -->
+            <circle class="progress-ring__circle" stroke="url(#gradient)" stroke-width="10" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80" stroke-dasharray="440" stroke-dashoffset="440"/>
+            <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#4F77D9;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#629DFF;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+        </svg>
+        <p id="message">Sorting, please<br>wait ...</p>
+    </div>
+</div>
+
+<script src="progressBar.js"></script>

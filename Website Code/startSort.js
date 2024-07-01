@@ -1,4 +1,5 @@
 stage1 = true;
+sorting = false;
 
 document.getElementById('actual-btn').addEventListener('change', function() {
     const file = this.files[0];
@@ -649,6 +650,7 @@ function submitGroups() {
     containerDiv.style.width = '100%'; // Match width with the table container
 
     const fullSortLabel = document.createElement('label');
+    fullSortLabel.onclick = finalizeSubmission;
     fullSortLabel.className = 'floater bigButtonHolder yellow fill';
     fullSortLabel.style.width = '100%'; // Take up half of the container width
 
@@ -659,6 +661,7 @@ function submitGroups() {
     fullSortLabel.appendChild(fullSortParagraph);
 
     const randomSortLabel = document.createElement('label');
+    randomSortLabel.onclick = finalizeSubmission;
     randomSortLabel.className = 'floater bigButtonHolder green fill bottom';
     randomSortLabel.style.width = '100%'; // Take up the remaining half of the container width
 
@@ -683,6 +686,11 @@ function submitGroups() {
 }
 
 function finalizeSubmission() {
+    console.log("clicked finalize submission");
+    if (sorting) {
+        return;
+    }
+
     let finalParamsTable = document.getElementById("finalParamsTable");
     let rows = finalParamsTable.rows;
     let instructions = document.getElementById("instructions");
@@ -692,9 +700,14 @@ function finalizeSubmission() {
         let inputElement = rows[i].cells[1].querySelector("input");
         if (inputElement.value === "" || (inputElement.type === "number" && (inputElement.value < 0 || !Number.isInteger(Number(inputElement.value))))) {
             instructions.innerHTML = "Please ensure all final parameters have valid values.";
-            instructions.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="event.preventDefault(); finalizeSubmission();">Submit ></a>';
             instructions.classList.add('text-danger');
             return;
         }
     }
+
+    // Proceed to the next step
+    instructions.innerHTML = "Sorting ...";
+    instructions.classList.remove('text-danger');
+    sorting = true;
+    console.log("starting sort");
 }
