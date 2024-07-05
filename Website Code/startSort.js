@@ -709,5 +709,27 @@ function finalizeSubmission() {
     instructions.innerHTML = "Sorting ...";
     instructions.classList.remove('text-danger');
     sorting = true;
-    console.log("starting sort");
+    openLoginPopup();
+}
+
+async function openLoginPopup() {
+    fetch('progressBar.html')
+    .then(response => response.text())
+    .then(data => {
+        // Assume 'data' contains your HTML which includes a script tag
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data, 'text/html');
+
+        // Extract and run scripts from the parsed HTML
+        Array.from(doc.querySelectorAll('script')).forEach(oldScript => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.parentNode.removeChild(oldScript);
+        });
+
+        // Insert the rest of the HTML
+        document.body.appendChild(doc.body);
+    });
 }
