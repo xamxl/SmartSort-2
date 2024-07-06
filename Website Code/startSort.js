@@ -710,6 +710,28 @@ function finalizeSubmission() {
     instructions.classList.remove('text-danger');
     sorting = true;
     openLoginPopup();
+
+    let tableData = getTableData("sheetTable");
+    console.log(tableData);
+    let orderArray = [
+        "🙋🏾‍♀️🙋🏻‍♂️",
+        "Ranked choices for desired locations",
+        "Ranked choices for not desired locations",
+        "Unranked choices for desired locations",
+        "Unranked choices for not desired locations",
+        "Ranked choices for individuals to be with",
+        "Ranked choices for individuals not to be with",
+        "Unranked choices for individuals to be with",
+        "Unranked choices for individuals not to be with",
+        "Attributes to balance",
+        "Attributes to split by",
+        "Attributes to not isolate",
+        "Attributes to isolate",
+        "Attributes to group by"];
+    let rankingRowIndex = 1;
+    let headerRowIndex = 2;
+    let reorderedData = reorderColumns(tableData, orderArray, rankingRowIndex, headerRowIndex);
+    // I think working (remember, still too many weights)
 }
 
 async function openLoginPopup() {
@@ -733,3 +755,72 @@ async function openLoginPopup() {
         document.body.appendChild(doc.body);
     });
 }
+
+function getTableData(tableId) {
+    const table = document.getElementById(tableId);
+    const rows = table.getElementsByTagName('tr');
+    const tableData = [];
+  
+    for (let i = 0; i < rows.length; i++) {
+      const cells = rows[i].getElementsByTagName('td');
+      const rowData = [];
+  
+      for (let j = 0; j < cells.length; j++) {
+        // Check if the cell contains a select element
+        const select = cells[j].querySelector('select');
+        if (select) {
+          rowData.push(select.value);
+        } else {
+          // Check if the cell contains an input of type number
+          const input = cells[j].querySelector('input[type="number"]');
+          if (input) {
+            rowData.push(input.value);
+          } else {
+            // Default to innerText for other types of cells
+            rowData.push(cells[j].innerText);
+          }
+        }
+      }
+  
+      if (rowData.length > 0) {
+        tableData.push(rowData);
+      }
+    }
+  
+    return tableData;
+}
+
+function reorderColumns(tableData, orderArray, rankingRowIndex, headerRowIndex) {
+    // Extract rankings and headers
+    const rankings = tableData[rankingRowIndex];
+    const headers = tableData[headerRowIndex];
+  
+    // Create a list to store columns with their respective orders and ranks
+    const columnsList = headers.map((header, index) => {
+      return {
+        name: header,
+        index: index,
+        order: orderArray.indexOf(header),
+        rank: parseInt(rankings[index], 10) || Infinity // Use Infinity for non-numeric ranks
+      };
+    });
+  
+    // Filter out columns that are not in orderArray and sort the rest
+    const filteredAndSortedColumns = columnsList
+      .filter(column => column.order !== -1) // Ensure the column is in the orderArray
+      .sort((a, b) => {
+        const orderDiff = a.order - b.order;
+        if (orderDiff !== 0) return orderDiff;
+        return a.rank - b.rank;
+      });
+  
+    // Extract the sorted column indices
+    const sortedColumnIndices = filteredAndSortedColumns.map(column => column.index);
+  
+    // Reorder columns in all rows based on the sorted column indices
+    const reorderedData = tableData.map(row => {
+      return sortedColumnIndices.map(index => row[index]);
+    });
+  
+    return reorderedData;
+  }
