@@ -266,13 +266,22 @@ function confirmRank() {
     let table = document.querySelector('table');
     let numColsNew = table.rows[1].cells.length;
 
-    var rankedOptions = [
+    var rankedOptions1 = [
         "Ranked choices for desired locations",
         "Ranked choices for not desired locations",
+        "Unranked choices for desired locations",
+        "Unranked choices for not desired locations",
         "Ranked choices for individuals to be with",
-        "Ranked choices for individuals not to be with"];
+        "Ranked choices for individuals not to be with",
+        "Unranked choices for individuals to be with",
+        "Unranked choices for individuals not to be with"];
+        var rankedOptions = [
+            "Ranked choices for desired locations",
+            "Ranked choices for not desired locations",
+            "Ranked choices for individuals to be with",
+            "Ranked choices for individuals not to be with"];
     var rankedOptionsCount = {};
-    rankedOptions.forEach(option => {
+    rankedOptions1.forEach(option => {
         rankedOptionsCount[option] = 0;
     });
 
@@ -343,7 +352,7 @@ function confirmRank() {
         newCell.classList.add('noClicker');
 
         let selectElement = table.rows[2].cells[i].getElementsByTagName('select')[0];
-    if (selectElement != null && (rankedOptionsCount[selectElement.value] == 0 || !rankedOptions.includes(selectElement.value))) {
+    if (selectElement != null && (rankedOptionsCount[selectElement.value] == 0 || !rankedOptions1.includes(selectElement.value))) {
         rankedOptionsCount[selectElement.value] += 1;
         var input = document.createElement("input");
         input.type = "number";
@@ -718,7 +727,6 @@ function finalizeSubmission() {
     openLoginPopup();
 
     let tableData = getTableData("sheetTable");
-    console.log(tableData);
     let orderArray = [
         "🙋🏾‍♀️🙋🏻‍♂️",
         "Ranked choices for desired locations",
@@ -737,7 +745,65 @@ function finalizeSubmission() {
     let rankingRowIndex = 1;
     let headerRowIndex = 2;
     let reorderedData = reorderColumns(tableData, orderArray, rankingRowIndex, headerRowIndex);
-    // I think working (remember, still too many weights)
+    // I think working
+    // now just need to extract the weights from reorderedData and get the location data
+    let processedData = processData(reorderedData);
+    let table = processedData.table;
+    let weights = processedData.outputArray;
+
+    let groups = getTableDataExcludingFirstRowAndLastColumn("groupTable");
+    
+    let finalParams = getLastColumnInputValues("finalParamsTable");
+
+    console.log(table);
+    console.log(weights);
+    console.log(groups);
+    console.log(finalParams);
+
+}
+
+function getLastColumnInputValues(tableId) {
+    const table = document.getElementById(tableId);
+    const rows = table.getElementsByTagName('tr');
+    const lastColumnValues = [];
+
+    for (let i = 0; i < rows.length; i++) { // Start from 1 to ignore the first row if needed
+        const cells = rows[i].getElementsByTagName('td');
+        const lastCell = cells[cells.length - 1]; // Get the last column
+
+        // Get the input element in the last cell
+        const input = lastCell.querySelector('input');
+        if (input) {
+            lastColumnValues.push(input.value);
+        }
+    }
+
+    return lastColumnValues;
+}
+
+function getTableDataExcludingFirstRowAndLastColumn(tableId) {
+    const table = document.getElementById(tableId);
+    const rows = table.getElementsByTagName('tr');
+    const tableData = [];
+
+    for (let i = 1; i < rows.length; i++) { // Start from 1 to ignore the first row
+        const cells = rows[i].getElementsByTagName('td');
+        const rowData = [];
+
+        for (let j = 0; j < cells.length - 1; j++) { // Ignore the last column
+            // Get the input element in the cell
+            const input = cells[j].querySelector('input');
+            if (input) {
+                rowData.push(input.value);
+            }
+        }
+
+        if (rowData.length > 0) {
+            tableData.push(rowData);
+        }
+    }
+
+    return tableData;
 }
 
 async function openLoginPopup() {
@@ -830,3 +896,51 @@ function reorderColumns(tableData, orderArray, rankingRowIndex, headerRowIndex) 
   
     return reorderedData;
   }
+
+  function processData(data) {
+    let orderArray = [
+        "Ranked choices for desired locations",
+        "Ranked choices for not desired locations",
+        "Unranked choices for desired locations",
+        "Unranked choices for not desired locations",
+        "Ranked choices for individuals to be with",
+        "Ranked choices for individuals not to be with",
+        "Unranked choices for individuals to be with",
+        "Unranked choices for individuals not to be with",
+        "Attributes to balance",
+        "Attributes to split by",
+        "Attributes to not isolate",
+        "Attributes to isolate",
+        "Attributes to group by"
+    ];
+
+    // Extracting the required part of the data
+    let table = data.slice(2); // Third row and down
+    let header = data[2].slice(1); // Third row except for the first column
+
+    let outputArray = [];
+    let attributesArray = [[], [], [], [], []]; // Separate arrays for the last 5 attributes
+
+    header.forEach((element, index) => {
+        if (element !== "") {
+            let weight = parseFloat(data[0][index + 1]) || 1; // Corresponding first row value
+
+            let orderIndex = orderArray.indexOf(element);
+            if (orderIndex >= 0 && orderIndex < 8) {
+                // First 8 elements
+                outputArray.push(weight);
+            } else if (orderIndex >= 8) {
+                // Last 5 elements
+                attributesArray[orderIndex - 8].push(weight);
+            }
+        }
+    });
+
+    // Append the attributes arrays to the outputArray
+    outputArray.push(...attributesArray);
+
+    return {
+        table: table,
+        outputArray: outputArray
+    };
+}
