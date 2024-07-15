@@ -205,17 +205,18 @@ function confirmSelect() {
     // Get the number of columns in the table
     numColsNew = table.rows[1].cells.length; // Assuming the second row defines the columns
 
+    var rankedOptions = [
+        "Ranked choices for desired locations",
+        "Ranked choices for not desired locations",
+        "Ranked choices for individuals to be with",
+        "Ranked choices for individuals not to be with"];
     for (var i = 0; i < numColsNew; i++) {
         // Create a new cell
         var newCell = newRow.insertCell(i);
         newCell.classList.add('tableSelectorCell');
         newCell.classList.add('noClicker');
 
-        var rankedOptions = [
-            "Ranked choices for desired locations",
-            "Ranked choices for not desired locations",
-            "Ranked choices for individuals to be with",
-            "Ranked choices for individuals not to be with"];
+        
         // if selector.value is in rankedOptions
         let selectElement = table.rows[1].cells[i].getElementsByTagName('select')[0];
     if (selectElement != null && rankedOptions.includes(selectElement.value)) {
@@ -270,6 +271,10 @@ function confirmRank() {
         "Ranked choices for not desired locations",
         "Ranked choices for individuals to be with",
         "Ranked choices for individuals not to be with"];
+    var rankedOptionsCount = {};
+    rankedOptions.forEach(option => {
+        rankedOptionsCount[option] = 0;
+    });
 
     for (let i = 0; i < numColsNew; i++) {
         let selectElement = table.rows[1].cells[i].getElementsByTagName('select')[0];
@@ -338,7 +343,8 @@ function confirmRank() {
         newCell.classList.add('noClicker');
 
         let selectElement = table.rows[2].cells[i].getElementsByTagName('select')[0];
-    if (selectElement != null) {
+    if (selectElement != null && (rankedOptionsCount[selectElement.value] == 0 || !rankedOptions.includes(selectElement.value))) {
+        rankedOptionsCount[selectElement.value] += 1;
         var input = document.createElement("input");
         input.type = "number";
         input.value = "1";
