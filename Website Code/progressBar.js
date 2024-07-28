@@ -1,28 +1,36 @@
-function setProgress(percent) {
-    const circle = document.querySelector('.progress-ring__circle');
+let cp = 0;
+let target = 0;
+
+const interval = setInterval(() => {
+  const increment = 0.01;
+
+  const circle = document.querySelector('.progress-ring__circle');
     const radius = circle.r.baseVal.value;
     const circumference = 2 * Math.PI * radius;
 
     circle.style.strokeDasharray = `${circumference} ${circumference}`;
     circle.style.strokeDashoffset = `${circumference}`;
 
-    const increment = 0.01;
-    const delay = 1;
-    let currentPercent = 0;
+  if (cp <= target) {
+    cp += increment;
+    const offset = circumference - (cp / 100) * circumference;
+    circle.style.strokeDashoffset = offset;
+  } else {
+    const offset = circumference - (cp / 100) * circumference;
+    circle.style.strokeDashoffset = offset;
+  }
 
-    const interval = setInterval(() => {
-        currentPercent += increment;
-        const offset = circumference - (currentPercent / 100) * circumference;
-        circle.style.strokeDashoffset = offset;
+  if (cp >= 100) {
+      clearInterval(interval);
+  }
+}, 1);
 
-        if (currentPercent >= percent) {
-            clearInterval(interval);
-        }
-    }, delay);
+function setProgress(target1) {
+  target = target1;
 }
 
 // Example: Set the progress to 100%
-setProgress(100);
+//setProgress(100);
 
 const message = document.getElementsByClassName('message')[0];
 const baseText = 'Sorting, please<br>wait'; // Base text including the line break

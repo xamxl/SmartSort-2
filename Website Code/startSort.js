@@ -700,7 +700,7 @@ function submitGroups() {
     document.getElementById("sheetContent").appendChild(outerDiv);
 }
 
-function finalizeSubmission() {
+async function finalizeSubmission() {
     console.log("clicked finalize submission");
     if (sorting) {
         return;
@@ -724,7 +724,6 @@ function finalizeSubmission() {
     instructions.innerHTML = "Sorting ...";
     instructions.classList.remove('text-danger');
     sorting = true;
-    openLoginPopup();
 
     let tableData = getTableData("sheetTable");
     let orderArray = [
@@ -760,6 +759,27 @@ function finalizeSubmission() {
     console.log(groups);
     console.log(finalParams);
 
+   // Start sorting process by calling the backend
+    await fetch('http://localhost:9090/start-sort');
+
+    openBarPopup();
+
+    // Establish WebSocket connection
+    const socket = new WebSocket('ws://localhost:9090/progress');
+    socket.onopen = function() {
+        console.log('WebSocket connection established');
+    };
+    socket.onmessage = function(event) {
+        const percent = parseInt(event.data, 10);
+        console.log('Progress received:', percent);
+        setProgress(percent);
+    };
+    socket.onerror = function(error) {
+        console.error('WebSocket Error:', error);
+    };
+    socket.onclose = function() {
+        console.log('WebSocket connection closed');
+    };
 }
 
 function getLastColumnInputValues(tableId) {
@@ -806,7 +826,7 @@ function getTableDataExcludingFirstRowAndLastColumn(tableId) {
     return tableData;
 }
 
-async function openLoginPopup() {
+async function openBarPopup() {
     fetch('progressBar.html')
     .then(response => response.text())
     .then(data => {
