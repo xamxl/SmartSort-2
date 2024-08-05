@@ -23,10 +23,7 @@ public class ProgressWebSocketHandler extends TextWebSocketHandler {
     public void sendProgressUpdate() throws IOException {
         if (this.session != null && this.session.isOpen()) {
             String message = String.valueOf(progress.get());
-            System.out.println("Sending progress update: " + message);
             this.session.sendMessage(new TextMessage(message));
-        } else {
-            System.out.println("Session is null or closed. Cannot send progress update.");
         }
     }
 
@@ -35,7 +32,6 @@ public class ProgressWebSocketHandler extends TextWebSocketHandler {
         new Thread(() -> {
             try {
                 for (int i = 0; i <= 100; i++) {
-                    System.out.println("Progress: " + i);
                     progress.set(i);
                     sendProgressUpdate();
                     Thread.sleep(100); // Simulate work

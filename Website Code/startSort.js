@@ -759,8 +759,22 @@ async function finalizeSubmission() {
     console.log(groups);
     console.log(finalParams);
 
-   // Start sorting process by calling the backend
-    await fetch('http://localhost:9090/start-sort');
+    // Prepare data to send to backend
+    let requestData = {
+        table: table,
+        weights: weights,
+        groups: groups,
+        finalParams: finalParams
+    };
+
+    // Start sorting process by calling the backend
+    await fetch('http://localhost:9090/start-sort', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    });
 
     openBarPopup();
 
