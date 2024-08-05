@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 
 @RestController
@@ -34,14 +35,55 @@ public class SortController {
             System.out.println("Received finalParams: " + finalParams);
             System.out.println("Received counts: " + counts);
 
-            // Process the data as needed (parsing, validation, etc.)
-
             // Start the sorting process
-            progressWebSocketHandler.startSort();
+            progressWebSocketHandler.startSort(table, weights, groups, finalParams, counts);
 
         } catch (Exception e) {
             System.err.println("Error processing request data: " + e.getMessage());
             // Handle the error accordingly
         }
+    }
+
+    @CrossOrigin(origins = "http://localhost:8888")
+    @PostMapping("/createAccount")
+    public String handleFormCreateAccount(@ModelAttribute CreateAccountInput createAccountInput) {
+            String checks = AccountServices.checkUsernameAndPasswordCA(createAccountInput.getEmail(), createAccountInput.getPassword(), createAccountInput.getConfirmPassword());
+            if (! checks.equals("VALID"))
+                return "{\"text\":\"" + checks + "\"}";
+            AccountServices.createAccount(createAccountInput.getEmail(), createAccountInput.getPassword());
+            return "{\"text\":\"" + "Account created." + "\"}";
+    }
+
+    @CrossOrigin(origins = "http://localhost:8888")
+    @PostMapping("/login")
+    public String handleFormLogin(@ModelAttribute LoginInput loginInput) {
+            if (! AccountServices.checkUsernameAndPasswordL(loginInput.getEmail(), loginInput.getPassword()))
+                return "{\"text\":\"INVALID\"}";
+            return "{\"text\":\"" + AccountServices.login(loginInput.getEmail()) + "\"}";
+    }
+
+    @CrossOrigin(origins = "http://localhost:8888")
+    @PostMapping("/verifyLogin")
+    public String handelVerifyLogin(@ModelAttribute VerifyLoginInput verifyLoginInput) {
+            if (! AccountServices.verifyLogin(verifyLoginInput.getEmail(), verifyLoginInput.getKey()))
+                return "{\"text\":\"INVALID\"}";
+            return "{\"text\":\"VALID\"}";
+    }
+
+    @CrossOrigin(origins = "http://localhost:8888")
+    @PostMapping("/signout")
+    public void handelSignout(@ModelAttribute SignoutInput signoutInput) {
+            if (! AccountServices.verifyLogin(signoutInput.getEmail(), signoutInput.getKey()))
+                return;
+            AccountServices.signout(signoutInput.getEmail());
+    }
+
+    @CrossOrigin(origins = "http://localhost:8888")
+    @PostMapping("/deleteAccount")
+    public String handelDeleteAccount(@ModelAttribute DeleteAccountInput deleteAccountInput) {
+            if (! AccountServices.verifyLogin(deleteAccountInput.getEmail(), deleteAccountInput.getKey()))
+                return "{\"text\":\"INVALID\"}";
+            AccountServices.deleteAccount(deleteAccountInput.getEmail());
+            return "{\"text\":\"VALID\"}";
     }
 }
