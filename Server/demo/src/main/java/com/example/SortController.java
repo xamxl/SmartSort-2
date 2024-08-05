@@ -25,12 +25,14 @@ public class SortController {
             List<Map<String, Object>> weights = (List<Map<String, Object>>) requestData.get("weights");
             List<Map<String, Object>> groups = (List<Map<String, Object>>) requestData.get("groups");
             List<Map<String, Object>> finalParams = (List<Map<String, Object>>) requestData.get("finalParams");
+            List<Map<String, Object>> counts = (List<Map<String, Object>>) requestData.get("counts");
 
             // Log the received data for debugging
             System.out.println("Received table: " + table);
             System.out.println("Received weights: " + weights);
             System.out.println("Received groups: " + groups);
             System.out.println("Received finalParams: " + finalParams);
+            System.out.println("Received counts: " + counts);
 
             // Process the data as needed (parsing, validation, etc.)
 

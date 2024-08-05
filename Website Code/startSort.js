@@ -749,22 +749,19 @@ async function finalizeSubmission() {
     let processedData = processData(reorderedData);
     let table = processedData.table;
     let weights = processedData.outputArray;
+    let counts = processedData.countArray
 
     let groups = getTableDataExcludingFirstRowAndLastColumn("groupTable");
     
     let finalParams = getLastColumnInputValues("finalParamsTable");
-
-    console.log(table);
-    console.log(weights);
-    console.log(groups);
-    console.log(finalParams);
 
     // Prepare data to send to backend
     let requestData = {
         table: table,
         weights: weights,
         groups: groups,
-        finalParams: finalParams
+        finalParams: finalParams,
+        counts: counts
     };
 
     // Start sorting process by calling the backend
@@ -931,7 +928,7 @@ function reorderColumns(tableData, orderArray, rankingRowIndex, headerRowIndex) 
     return reorderedData;
   }
 
-  function processData(data) {
+function processData(data) {
     let orderArray = [
         "Ranked choices for desired locations",
         "Ranked choices for not desired locations",
@@ -952,20 +949,23 @@ function reorderColumns(tableData, orderArray, rankingRowIndex, headerRowIndex) 
     let table = data.slice(2); // Third row and down
     let header = data[2].slice(1); // Third row except for the first column
 
-    let outputArray = [];
+    let outputArray = new Array(8).fill(1); // Initialize with 1 for the first 8 elements
     let attributesArray = [[], [], [], [], []]; // Separate arrays for the last 5 attributes
+    let countArray = new Array(orderArray.length).fill(0); // Initialize count array
 
     header.forEach((element, index) => {
         if (element !== "") {
             let weight = parseFloat(data[0][index + 1]) || 1; // Corresponding first row value
-
             let orderIndex = orderArray.indexOf(element);
-            if (orderIndex >= 0 && orderIndex < 8) {
-                // First 8 elements
-                outputArray.push(weight);
-            } else if (orderIndex >= 8) {
-                // Last 5 elements
-                attributesArray[orderIndex - 8].push(weight);
+            if (orderIndex >= 0) {
+                countArray[orderIndex]++;
+                if (orderIndex < 8) {
+                    // First 8 elements
+                    outputArray[orderIndex] = weight;
+                } else {
+                    // Last 5 elements
+                    attributesArray[orderIndex - 8].push(weight);
+                }
             }
         }
     });
@@ -975,6 +975,7 @@ function reorderColumns(tableData, orderArray, rankingRowIndex, headerRowIndex) 
 
     return {
         table: table,
-        outputArray: outputArray
+        outputArray: outputArray,
+        countArray: countArray
     };
 }
