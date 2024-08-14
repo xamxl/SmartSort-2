@@ -761,8 +761,12 @@ async function finalizeSubmission() {
         weights: weights,
         groups: groups,
         finalParams: finalParams,
-        counts: counts
+        counts: counts,
+        email: getCookie("email"),
+        password: getCookie("password")
     };
+
+    console.log('Request Data:', requestData);
 
     // Start sorting process by calling the backend
     await fetch('http://localhost:9090/start-sort', {
@@ -946,7 +950,7 @@ function processData(data) {
     ];
 
     // Extracting the required part of the data
-    let table = data.slice(2); // Third row and down
+    let table = data.slice(4); // Third row and down
     let header = data[2].slice(1); // Third row except for the first column
 
     let outputArray = new Array(8).fill(1); // Initialize with 1 for the first 8 elements

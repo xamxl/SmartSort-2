@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Component
 public class ProgressWebSocketHandler extends TextWebSocketHandler {
@@ -39,23 +40,23 @@ public class ProgressWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    public String startSort(List<Map<String, Object>> table, List<Map<String, Object>> weights, List<Map<String, Object>> groups, List<Map<String, Object>> finalParams, List<Map<String, Object>> counts) {
+    public String startSort(List<List<String>> table, List<Object> weightsSource, List<List<String>> groups, List<String> finalParams, List<List<Integer>> counts, String email, String password) {
         Callable<String> task = () -> {
             try {
-                if (!AccountServices.verifyLogin(sortInput.getEmail(), sortInput.getKey())) {
+                if (!AccountServices.verifyLogin(email, password)) {
                     return "{\"text\":\"INVALID\"}";
                 }
                 
                 Sort bestSort = null;
                 int iterFound = -1;
                 ArrayList<Double> bestAverageUnhappinessOverIterations = null;
-                for (int sortNum = 0; sortNum < sortInput.getNumber3(); sortNum++) {
-                    double[][] weights = {{sortInput.getWeight1()}, {sortInput.getWeight2()}, {sortInput.getWeight3()}, {sortInput.getWeight4()}, {sortInput.getWeight5()}, {sortInput.getWeight6()}, {sortInput.getWeight7()}, {sortInput.getWeight8()}, sortInput.getWeight9(), sortInput.getWeight10(), {sortInput.getNumber1()}, sortInput.getWeight11(), sortInput.getWeight12(), sortInput.getWeight13()};
-                    ArrayList<ArrayList<String>> input = MyUtility.readJsonStringInput(sortInput.getFile1());
+                for (int sortNum = 0; sortNum < Integer.parseInt(finalParams.get(2)); sortNum++) {
+                    double[][] weights = {{((Number) weightsSource.get(0)).doubleValue()}, {((Number) weightsSource.get(1)).doubleValue()}, {((Number) weightsSource.get(2)).doubleValue()}, {((Number) weightsSource.get(3)).doubleValue()}, {((Number) weightsSource.get(4)).doubleValue()}, {((Number) weightsSource.get(5)).doubleValue()}, {((Number) weightsSource.get(6)).doubleValue()}, {((Number) weightsSource.get(7)).doubleValue()}, ((List<?>) weightsSource.get(8)).stream().mapToDouble(o -> ((Number) o).doubleValue()).toArray(), ((List<?>) weightsSource.get(9)).stream().mapToDouble(o -> ((Number) o).doubleValue()).toArray(), {Integer.parseInt(finalParams.get(0))}, ((List<?>) weightsSource.get(10)).stream().mapToDouble(o -> ((Number) o).doubleValue()).toArray(), ((List<?>) weightsSource.get(11)).stream().mapToDouble(o -> ((Number) o).doubleValue()).toArray(), ((List<?>) weightsSource.get(12)).stream().mapToDouble(o -> ((Number) o).doubleValue()).toArray()};
+                    ArrayList<ArrayList<String>> input = table.stream().map(innerList -> new ArrayList<>(innerList)).collect(Collectors.toCollection(ArrayList::new));
                     Individual[] ind = new Individual[input.size() - 1];
                     for (int i = 1; i < input.size(); i++)
-                        ind[i-1] = new Individual(input.get(i), input.get(0), new int[] {sortInput.getValue1(), sortInput.getValue2(), sortInput.getValue3(), sortInput.getValue4(), sortInput.getValue5(), sortInput.getValue6(), sortInput.getValue7(), sortInput.getValue8(), sortInput.getValue9(), sortInput.getValue10(), sortInput.getValue11(), sortInput.getValue12(), sortInput.getValue13()}, weights);
-                    ArrayList<ArrayList<String>> input1 = MyUtility.readJsonStringInput(sortInput.getFile2());
+                        ind[i-1] = new Individual(input.get(i), input.get(0), new int[] {((Number) weightsSource.get(0)).intValue(), ((Number) weightsSource.get(1)).intValue(), ((Number) weightsSource.get(2)).intValue(), ((Number) weightsSource.get(3)).intValue(), ((Number) weightsSource.get(4)).intValue(), ((Number) weightsSource.get(5)).intValue(), ((Number) weightsSource.get(6)).intValue(), ((Number) weightsSource.get(7)).intValue(), ((Number) weightsSource.get(8)).intValue(), ((Number) weightsSource.get(9)).intValue(), ((Number) weightsSource.get(10)).intValue(), ((Number) weightsSource.get(11)).intValue(), ((Number) weightsSource.get(12)).intValue()}, weights);
+                    ArrayList<ArrayList<String>> input1 = groups.stream().map(innerList -> new ArrayList<>(innerList)).collect(Collectors.toCollection(ArrayList::new));;;
                     Location[] l = new Location[input1.size()];
                     for (int i = 0; i < input1.size(); i++) {
                         // SOLUTION: maybe needed above with individuals as well, if there is an error, skip that location
@@ -101,7 +102,7 @@ public class ProgressWebSocketHandler extends TextWebSocketHandler {
                     for (int i = 0; i < l.length; i++)
                         l[i].calculateMaxUnhappiness(sort);
 
-                    int iter = sortInput.getNumber2();
+                    int iter = Integer.parseInt(finalParams.get(1));
                     if (iter > 1000000) {
                         iter = 1000000;
                     }
